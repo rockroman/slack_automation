@@ -21,12 +21,15 @@ scope = ["https://spreadsheets.google.com/feeds",
 # creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 # client = gspread.authorize(creds)
 # Load Google credentials from environment variable
-google_creds_json = os.environ.get('GOOGLE_CREDENTIALS')
-if not google_creds_json:
-    raise ValueError("GOOGLE_CREDENTIALS environment variable is not set")
+# google_creds_json = os.environ.get('GOOGLE_CREDENTIALS')
+# if not google_creds_json:
+#     raise ValueError("GOOGLE_CREDENTIALS environment variable is not set")
+# Load Google credentials from credentials.json
+with open('credentials.json') as f:
+    creds_dict = json.load(f)
 
 # Parse the JSON string into a dictionary
-creds_dict = json.loads(google_creds_json)
+# creds_dict = json.loads(google_creds_json)
 
 # Create credentials object
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
