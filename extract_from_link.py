@@ -1,7 +1,9 @@
 import requests
 from datetime import datetime
 import re
+import os
 
+SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
 
 def calc_time(link):
     print("Received link inside calc_time:", link)
@@ -11,7 +13,8 @@ def calc_time(link):
 
     # Prepare headers for Slack API
     headers = {
-    "Authorization": "Bearer ",
+     'Authorization': f'Bearer {SLACK_API_TOKEN}',
+    'Content-Type': 'application/json'
     }
 
     # Use conversations.replies to get message details and reply count

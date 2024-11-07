@@ -1,22 +1,37 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from refactored_slack import Conversations
-
+import os
 import time
 import time
 import datetime
 from datetime import datetime
+import json
 
 from timestap_utils import load_timestamp,format_timestamp,save_timestamp
 
 timestamp = load_timestamp()
+
 
 # connect to Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", 
          "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive"]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+# creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+# client = gspread.authorize(creds)
+# Load Google credentials from environment variable
+google_creds_json = os.environ.get('GOOGLE_CREDENTIALS')
+if not google_creds_json:
+    raise ValueError("GOOGLE_CREDENTIALS environment variable is not set")
+
+# Parse the JSON string into a dictionary
+creds_dict = json.loads(google_creds_json)
+
+# Create credentials object
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
+# Authorize the client
 client = gspread.authorize(creds)
 
 sheet = client.open("Roman Rakic_test").get_worksheet(2)
@@ -32,7 +47,7 @@ def find_first_empty_row():
 
 
 
-slack_convos = Conversations(timestamp=timestamp, limit=30)
+slack_convos = Conversations(timestamp=timestamp, limit=6)
 results = slack_convos.fetch_conversations_after_timestamp(timestamp)
 
 # F first empty row

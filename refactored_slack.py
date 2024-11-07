@@ -4,6 +4,10 @@ from datetime import datetime
 import requests
 from extract_from_link import calc_time
 
+import os
+
+SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
+
 # -----------------------------------------------------------------------------------------------------
 # set the timestamp to search after (this timestamp should be updated after
 # script execution is finished)
@@ -55,8 +59,8 @@ class Conversations:
     def get_conversations(self,timestamp):
         url = "https://slack.com/api/conversations.history"
         headers = {
-            "Authorization": "Bearer ",
-            "Content-Type": "application/json"
+             'Authorization': f'Bearer {SLACK_API_TOKEN}',
+            'Content-Type': 'application/json'
         }
         payload = {
             "channel": "C02NH8VL28G",
