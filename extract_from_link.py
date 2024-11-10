@@ -2,6 +2,8 @@ import requests
 from datetime import datetime
 import re
 import os
+# if os.path.isfile('env.py'):
+#     import env
 
 SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
 

@@ -5,6 +5,8 @@ import requests
 from extract_from_link import calc_time
 
 import os
+# if os.path.isfile('env.py'):
+#     import env
 
 SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
 
@@ -129,12 +131,12 @@ class Conversations:
     
     
     def process_normal_message(self,message,message_ts):
-        message_id = f"message_{int(message_ts)}"
+        issue_id = f"issue_{int(message_ts)}"
         normal_message = self.create_message_data(message, message_ts)
-        self.issues_data[message_id] = {
-            "message_timestamp": normal_message['timestamp'],
-            "message_text": normal_message["text"],
-            "message_link": normal_message["link"],
+        self.issues_data[issue_id] = {
+            "issue_timestamp": normal_message['timestamp'],
+            "issue_text": normal_message["text"],
+            "first_message_link": normal_message["link"],
             "reply_count": message.get("reply_count", 0)
         }
         print("Normal message date:", self._format_timestamp(normal_message['timestamp']))
