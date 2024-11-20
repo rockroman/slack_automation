@@ -1,6 +1,8 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from refactored_slack import Conversations
+from unresolved_issues import get_unresolved, remove_from_unresolved
+from revisit_issue import update_time_to_first_response
 import os
 import time
 import time
@@ -50,7 +52,7 @@ def find_first_empty_row():
 
 
 
-slack_convos = Conversations(timestamp=timestamp, limit=6)
+slack_convos = Conversations(timestamp=timestamp, limit=50)
 results = slack_convos.fetch_conversations_after_timestamp(timestamp)
 
 # F first empty row
@@ -80,18 +82,41 @@ for i, result in enumerate(results):
     # Update Date column  A
     sheet.update_cell(row, 1, date)
     
+    # Update Date column  B
+    sheet.update_cell(row, 2, "PP5 - PA")
+    
     # Update Time to first response  column E
     sheet.update_cell(row, 5, first_response_time)
     
     # Update Link  column F
     sheet.update_cell(row, 6, link)
     
+def check_unresolved():
+    unresolved = get_unresolved()
+    if len(unresolved) > 0:
+        resolved_count = 0
+        for slack_link in unresolved.copy():  # Use a copy to safely modify during iteration
+            reply_found = update_time_to_first_response(slack_link)
+            if reply_found:
+                remove_from_unresolved(slack_link)
+                resolved_count += 1
+        
+        print(f"Processed {resolved_count} previously unresolved links.")
+        print(f"{len(get_unresolved())} links remain unresolved.")
+    else:
+        print("No unresolved links to process.")
+    
+    
 if slack_convos.latest_timestamp > timestamp:
     save_timestamp(slack_convos.latest_timestamp)
     print(f"New ending timestamp: {format_timestamp(slack_convos.latest_timestamp)}")
+    
 else:
     print("No new messages, timestamp not updated.")
 
 print(f"Final timestamp: {format_timestamp(load_timestamp())}")
 
 print(f"Updated {len(results)} rows in the sheet.")
+print(f"Unresolved links: {get_unresolved()}")
+check_unresolved()
+
