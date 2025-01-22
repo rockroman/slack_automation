@@ -14,4 +14,6 @@ __pycache__
 manual_ext
 temp
 credentials.json
+testing
+slack_API
 
